@@ -23,23 +23,18 @@ void hfs_setsilence(int s) {
 }
 
 void writeToHFSFile(HFSPlusCatalogFile* file, uint8_t* buffer, size_t bytesLeft, Volume* volume) {
-	io_func* io = NULL;
+	io_func* io;
 
 	if(file->permissions.ownerFlags & UF_COMPRESSED) {
 		hfs_panic("file is compressed");
-//		io = openHFSPlusCompressed(volume, file);
-		if(io == NULL) {
-			hfs_panic("error opening file");
-			return;
-		}
-	} else {
-		io = openRawFile(file->fileID, &file->dataFork, (HFSPlusCatalogRecord*)file, volume);
-		if(io == NULL) {
-			hfs_panic("error opening file");
-			return;
-		}
-		allocate((RawFile*)io->data, bytesLeft);
 	}
+
+	io = openRawFile(file->fileID, &file->dataFork, (HFSPlusCatalogRecord*)file, volume);
+	if(io == NULL) {
+		hfs_panic("error opening file");
+	}
+
+	allocate((RawFile*)io->data, bytesLeft);
 
 	if(!WRITE(io, 0, (size_t)bytesLeft, buffer)) {
 		hfs_panic("error writing");
@@ -307,13 +302,10 @@ uint32_t readHFSFile(HFSPlusCatalogFile* file, uint8_t** buffer, Volume* volume)
 
 	if(file->permissions.ownerFlags & UF_COMPRESSED) {
 		hfs_panic("It's compressed!");
-		return 0;
 	} else {
 		io = openRawFile(file->fileID, &file->dataFork, (HFSPlusCatalogRecord*)file, volume);
 		if(io == NULL) {
 			hfs_panic("error opening file");
-			free(buffer);
-			return 0;
 		}
 	}
 
@@ -321,7 +313,6 @@ uint32_t readHFSFile(HFSPlusCatalogFile* file, uint8_t** buffer, Volume* volume)
 	*buffer = malloc(bytesLeft);
 	if(!(*buffer)) {
 		hfs_panic("error allocating memory");
-		return 0;
 	}
 	
 #if defined(CONFIG_A4) || defined(CONFIG_S5L8920)

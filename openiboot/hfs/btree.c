@@ -225,7 +225,6 @@ static void* searchNode(BTree* tree, uint32_t root, BTKey* searchKey, int *exact
 
 	if(lastRecordDataOffset == 0) {
 		hfs_panic("BTree inconsistent!");
-		return NULL;
 	}
 
 	if(descriptor->kind == kBTLeafNode) {        
@@ -861,7 +860,6 @@ static uint32_t removeNode(BTree* tree, uint32_t node) {
 
 		if(mapNode == 0) {
 			hfs_panic("Cannot remove node because I can't map it!");
-			return 0;
 		}
 
 		mapRecordStart = mapNode * tree->headerRec->nodeSize + 14;
@@ -1187,7 +1185,6 @@ static int addRecord(BTree* tree, uint32_t root, BTKey* searchKey, size_t length
 		if(lastRecordDataOffset == 0) {
 			if(descriptor->numRecords == 0) {
 				hfs_panic("empty index node in btree");
-				return 0;
 			}
 
 			key = READ_KEY(tree, (root * tree->headerRec->nodeSize) + 14, tree->io);

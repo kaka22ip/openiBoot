@@ -314,7 +314,6 @@ int removeExtents(RawFile* rawFile) {
 		if(currentExtent == 8) {
 			if(rawFile->volume->extentsTree == NULL) {
 				hfs_panic("no extents overflow file loaded yet!");
-				return FALSE;
 			}
 
 			if(descriptor != ((HFSPlusExtentDescriptor*) forkData->extents)) {
@@ -325,7 +324,6 @@ int removeExtents(RawFile* rawFile) {
 			descriptor = (HFSPlusExtentDescriptor*) search(rawFile->volume->extentsTree, (BTKey*)(&extentKey), &exact, NULL, NULL);
 			if(descriptor == NULL || exact == FALSE) {
 				hfs_panic("inconsistent extents information!");
-				return FALSE;
 			} else {
 				removeFromBTree(rawFile->volume->extentsTree, (BTKey*)(&extentKey));
 				currentExtent = 0;
@@ -433,7 +431,6 @@ int readExtents(RawFile* rawFile) {
 		if(currentExtent == 8) {
 			if(rawFile->volume->extentsTree == NULL) {
 				hfs_panic("no extents overflow file loaded yet!");
-				return FALSE;
 			}
 
 			if(descriptor != ((HFSPlusExtentDescriptor*) forkData->extents)) {
@@ -444,7 +441,6 @@ int readExtents(RawFile* rawFile) {
 			descriptor = (HFSPlusExtentDescriptor*) search(rawFile->volume->extentsTree, (BTKey*)(&extentKey), &exact, NULL, NULL);
 			if(descriptor == NULL || exact == FALSE) {
 				hfs_panic("inconsistent extents information!");
-				return FALSE;
 			} else {
 				currentExtent = 0;
 				continue;
